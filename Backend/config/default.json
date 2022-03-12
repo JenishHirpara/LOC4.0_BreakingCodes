@@ -1,4 +1,6 @@
 {
     "mongoURI": "mongodb+srv://heth:heth@cluster0.cy01k.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
-    "jwtSecret": "Hethgala"
+    "jwtSecret": "Hethgala",
+    "password": "Hethgala123",
+    "strict-ssl": false
 }
