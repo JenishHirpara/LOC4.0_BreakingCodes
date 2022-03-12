@@ -1,11 +1,16 @@
 const express = require('express')
 const router = express.Router()
 const Order = require('../models/Order')
+const sendEmail = require('../nodemailer')
+
 router.post('/', async (req, res) => {
     try {
         const order = await Order.create(req.body)
 
         console.log(order)
+
+        sendEmail(order)
+
         res.send(order)
     } catch (error) {
         console.log(error.message);

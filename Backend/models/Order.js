@@ -20,6 +20,9 @@ const OrderSchema = mongoose.Schema({
     },
     vendorName: {
         type: String
+    },
+    quantity: {
+        type: Number
     }
 });
 

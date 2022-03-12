@@ -1,24 +1,34 @@
-var nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer')
 
-var transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'galatz789@gmail.com',
-        pass: 'Hethgala123'
-    }
-});
+const sendMail = (order) => {
+    // const { restroEmail, password, to, subject, body } = mailInfo
+    process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
+    console.log('hello')
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: `galatz789@gmail.com`,
+            pass: `Hethgala123`
+        }
+    });
 
-var mailOptions = {
-    from: 'galatz789@gmail.com',
-    to: 'hethgala@gmail.com',
-    subject: 'Sending Email using Node.js',
-    text: 'That was easy!'
-};
+    const date = new Date(order.date);
 
-transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-        console.log(error);
-    } else {
-        console.log('Email sent: ' + info.response);
-    }
-});
+
+    let mailOptions = {
+        from: `galatz789@gmail.com`,
+        to: `shahjash271@gmail.com`,
+        subject: `New order`,
+        html: `<h1>I have a new order to place</h1>
+        <h3>Product Name: ${order.name}<h3>
+        <h3>Product Quantity: ${order.quantity}</h3>
+        <h4>Vendor Name: ${order.vendorName} </h4>
+        <h4>Date of order: ${date.toDateString()} </h4>
+        <h5> Please Notify me once the order is ready for delivery</h5>
+        `
+    };
+
+    return transporter.sendMail(mailOptions)
+}
+
+module.exports = sendMail
