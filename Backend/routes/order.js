@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const Order = require('../models/Order')
 const sendEmail = require('../nodemailer')
-
+const Razorpay = require('razorpay')
 router.post('/', async (req, res) => {
     try {
         const order = await Order.create(req.body)
@@ -44,6 +44,30 @@ router.get('/', async (req, res) => {
     }
 })
 
+router.post('/create_rzp_order',async(req,res)=>{
+    try{
+        var instance = new Razorpay({
+            key_id: 'rzp_test_EezJpEjtdonI6h',
+            key_secret: 'R8pOwW8xMSNwoU3j7zhyvLax',
+          });
+          amt = req.body.amt;
+          var options = {
+            amount: amt*100,  // amount in the smallest currency unit
+            currency: "INR",
+            receipt: "order_rcptid_11"
+          };
+          instance.orders.create(options, function(err, order) {
+        return {
+            "id": order.id,
+        }
+          });
+          
+
+    }catch(error){
+        console.log(error.message);
+        res.status(500).send('Server Error')
+    }
+})
 // //Register a User
 
 // router.post('/register', [
