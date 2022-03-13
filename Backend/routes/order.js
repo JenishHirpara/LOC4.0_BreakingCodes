@@ -3,7 +3,7 @@ const router = express.Router()
 const Order = require('../models/Order')
 const Inventory = require('../models/Inventory')
 const sendEmail = require('../nodemailer')
-
+const Razorpay = require('razorpay')
 router.post('/', async (req, res) => {
     try {
         const order = await Order.create(req.body)
@@ -80,6 +80,5 @@ router.post('/create/:id', async (req, res) => {
         res.status(500).send('Server Error')
     }
 })
-
 
 module.exports = router

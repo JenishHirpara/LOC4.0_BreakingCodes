@@ -25,6 +25,7 @@
     "mongoose": "^5.9.21",
     "nodemailer": "^6.7.2",
     "nodemon": "^2.0.4",
+    "razorpay": "^2.8.1",
     "react-router-dom": "^5.2.0"
   },
   "devDependencies": {
