@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const Order = require('../models/Order')
+const Inventory = require('../models/Inventory')
 const sendEmail = require('../nodemailer')
 
 router.post('/', async (req, res) => {
@@ -25,6 +26,20 @@ router.post('/update/:id', async (req, res) => {
             { $set: req.body },
             { new: true })
 
+        const inventory = await Inventory.find({ name: order.name })
+        console.log(inventory)
+        inventory[0].stock_quantity += order.quantity
+        console.log(inventory[0].stock_quantity)
+
+        const inventory1 = await Inventory.findByIdAndUpdate(
+            inventory[0]._id,
+            {
+                $set: {
+                    stock_quantity: inventory[0].stock_quantity
+                }
+            },
+            { new: true })
+
         console.log(order)
         res.send(order)
     } catch (error) {
@@ -44,151 +59,27 @@ router.get('/', async (req, res) => {
     }
 })
 
-// //Register a User
+router.post('/create/:id', async (req, res) => {
+    try {
+        const inventory = await Inventory.findById(req.params.id)
 
-// router.post('/register', [
-//     check('name', 'Please enter a name').not().isEmpty(),
-//     check('email', 'Enter a valid email address').isEmail(),
-//     check('password', 'Please enter a valid password').isLength({ min: 6 })
-// ], async (req, res) => {
-//     const errors = validationResult(req)
-//     if (!errors.isEmpty()) {
-//         return res.status(400).send({
-//             errors: errors.array()
-//         })
-//     }
+        const order = await Order.create({
+            name: inventory.name,
+            complete: false,
+            vendorName: 'Heth',
+            quantity: 5,
+            url: 'https://m.media-amazon.com/images/I/61cbQrV2WKL._SL1500_.jpg'
+        })
 
+        console.log(sendEmail(order))
 
-//     const { name, email, password } = req.body;
+        res.send(order)
 
-//     try {
-//         let user = await User.findOne({ email });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send('Server Error')
+    }
+})
 
-//         if (user) {
-//             return res.status(400).json({
-//                 msg: 'User already exists'
-//             })
-//         }
-
-//         user = new User({ name, email, password });
-
-//         const salt = await bcrypt.genSalt(10);
-
-//         user.password = await bcrypt.hash(password, salt);
-
-//         await user.save();
-
-//         const payload = {
-//             user: {
-//                 id: user.id
-//             }
-//         }
-
-//         jwt.sign(payload, config.get('jwtSecret'), {
-//             expiresIn: 10000000
-//         }, (err, token) => {
-//             if (err) throw err;
-//             res.json({ token, user })
-//         })
-//     }
-//     catch (error) {
-//         console.log(error.message);
-//         res.status(500).send('Server Error')
-//     }
-// })
-
-
-// //Logging in the already registered user
-// router.post('/login', [
-//     check('email', 'Please enter a valid email id').isEmail(),
-//     check('password', 'Password is required').exists()
-// ], async (req, res) => {
-//     const errors = validationResult(req);
-//     if (!errors.isEmpty()) {
-//         return res.status(400).send({
-//             errors: errors.array()
-//         })
-//     }
-//     const { email, password } = req.body;
-
-//     try {
-//         let user = await User.findOne({ email });
-
-//         if (!user) {
-//             return res.status(400).json({
-//                 msg: 'User npot found'
-//             })
-//         }
-
-//         const isMatch = await bcrypt.compare(password, user.password);
-
-//         if (!isMatch) {
-//             return res.status(400).json({
-//                 msg: 'Incorrect password entered'
-//             })
-//         }
-
-//         const payload = {
-//             user: {
-//                 id: user.id
-//             }
-//         }
-
-//         jwt.sign(payload, config.get('jwtSecret'), {
-//             expiresIn: 360000
-//         }, (err, token) => {
-//             if (err) throw err;
-//             res.json({ token, user })
-//         })
-
-//     } catch (error) {
-//         console.log(error.message);
-//         res.status(500).json({
-//             msg: 'Server Error'
-//         })
-
-//     }
-// })
-
-// //Update user
-// router.put('/:id', auth, async (req, res) => {
-//     try {
-//         const user = await User.findByIdAndUpdate(
-//             req.params.id,
-//             { $set: req.body },
-//             { new: true })
-//         const user1 = await User.findById(req.params.id)
-
-//         res.status(201).send(user1)
-//     } catch (error) {
-//         console.log(error.message);
-//         res.status(500).send({
-//             msg: 'Server Error'
-//         })
-//     }
-
-
-// })
-
-
-// //Delete the existing user
-// router.delete('/delete', auth, hasRoles(['heth']), async (req, res) => {
-//     console.log(res.locals.user._id)
-//     const deletedUser = await User.findByIdAndDelete(res.locals.user._id);
-//     res.status(200).send({
-//         msg: 'User deleted',
-//         deletedUser
-//     })
-// })
-
-// router.get('/', auth, async (req, res) => {
-//     try {
-//         const user = await User.findById(res.locals.user._id).select('-password')
-//         res.json(user);
-//     } catch (err) {
-//         console.log(err.message);
-//         res.status(500).json({ msg: "Server error" })
-//     }
-// })
 
 module.exports = router

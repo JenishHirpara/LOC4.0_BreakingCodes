@@ -23,6 +23,9 @@ const OrderSchema = mongoose.Schema({
     },
     quantity: {
         type: Number
+    },
+    url: {
+        type: String
     }
 });
 
